@@ -1,5 +1,5 @@
 import curses
-from datetime import timedelta
+from datetime import timedelta, datetime
 import pathlib
 import pygame
 
@@ -13,7 +13,7 @@ class Handler:
         self.styles = styles
         pygame.mixer.init()
         pygame.mixer.music.load(
-            str(pathlib.Path(__file__).parent.absolute()) + "432.wav"
+            str(pathlib.Path(__file__).parent.absolute()) + "/432.wav"
         )
         self.nobeep = False
 
@@ -117,14 +117,17 @@ class Handler:
                 return {
                     "supd": ["Plan", "norm"],
                     "update_screen": True,
-                    "screen_updates": [
-                        x + [self.styles.get("norm")]
-                        for x in self.plan.showme(
-                            nlin,
-                            ncol,
-                            0 if inp in ("plan show", "plan") else int(inp[10:]),
-                        )
-                    ],
+                    "screen_updates": self.plan.showme(
+                        nlin,
+                        ncol,
+                        0 if inp in ("plan show", "plan") else int(inp[10:]),
+                        {
+                            "usu": self.styles.get("norm"),
+                            "bef": self.styles.get("notc"),
+                            "aft": self.styles.get("red"),
+                        },
+                        datetime.strftime(datetime.now(), "%H%M"),
+                    ),
                 }
             elif inp.startswith("plan slot "):
                 try:
@@ -136,14 +139,24 @@ class Handler:
                     return {
                         "supd": [f"Plan Slot: Slot {slot} updated", "norm"],
                         "update_screen": True,
-                        "screen_updates": [
-                            x + [self.styles.get("norm")]
-                            for x in self.plan.showme(nlin, ncol, 0)
-                        ],
+                        "screen_updates": self.plan.showme(
+                            nlin,
+                            ncol,
+                            0,
+                            {
+                                "usu": self.styles.get("norm"),
+                                "bef": self.styles.get("notc"),
+                                "aft": self.styles.get("red"),
+                            },
+                            datetime.strftime(datetime.now(), "%H%M"),
+                        ),
                     }
                 except Exception as e:
                     return {
-                        "supd": [f"Plan Slot: Bad command `{inp}`", "norm_blink"],
+                        "supd": [
+                            f"Plan Slot: Bad command `{inp}` - {str(e)}",
+                            "norm_blink",
+                        ],
                         "update_screen": False,
                     }
             elif inp.startswith("plan rem "):
@@ -156,10 +169,17 @@ class Handler:
                             "norm",
                         ],
                         "update_screen": True,
-                        "screen_updates": [
-                            x + [self.styles.get("norm")]
-                            for x in self.plan.showme(nlin, ncol, 0)
-                        ],
+                        "screen_updates": self.plan.showme(
+                            nlin,
+                            ncol,
+                            0,
+                            {
+                                "usu": self.styles.get("norm"),
+                                "bef": self.styles.get("notc"),
+                                "aft": self.styles.get("red"),
+                            },
+                            datetime.strftime(datetime.now(), "%H%M"),
+                        ),
                     }
                 except Exception as e:
                     return {

@@ -31,7 +31,7 @@ class planodoro:
         """Get a sorted list of timeslots"""
         return sorted(list(self.tslots.values()))
 
-    def showme(self, nlin, ncol, slin):
+    def showme(self, nlin, ncol, slin, style, ctime):
         need_to_show = [" TIME : TASK", f" ---- : {'-' * (ncol-9)} "]
         like_to_show = [
             f" {x.slotname} : {x.slotdesc[:ncol-9]} " for x in self.gslots()
@@ -44,9 +44,29 @@ class planodoro:
             # There is a fixed point at len(like_to_show) - t_available_lin
             offset = min(slin, len(like_to_show) - t_available_lin)
             to_show = need_to_show + like_to_show[offset : offset + t_available_lin]
-        return [[2, 0, " " * ncol * (nlin - 4)]] + [
-            [i + 2, 0, to_show[i]] for i in range(len(to_show))
+        treturn = [[2, 0, " " * ncol * (nlin - 4), style["usu"]]] + [
+            [i + 2, 0, to_show[i], style["usu"]] for i in range(len(to_show))
         ]
+        ibefore = ""
+        for x in like_to_show:
+            if x < " " + ctime:
+                ibefore = str(x)
+        iafter = ""
+        for x in like_to_show[::-1]:
+            if x > " " + ctime:
+                iafter = str(x)
+        for i in range(len(treturn)):
+            # do this bc we will be modifying the list
+            if treturn[i][2] in [ibefore, iafter]:
+                treturn += [
+                    [
+                        treturn[i][0],
+                        treturn[i][1],
+                        treturn[i][2][:5],
+                        style["bef"] if treturn[i][2] == ibefore else style["aft"],
+                    ]
+                ]
+        return treturn
 
 
 class ptimer:

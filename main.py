@@ -5,7 +5,7 @@ import time
 from handler import Handler
 
 
-PROG_VERSION = "v1.0.0 b.439"
+PROG_VERSION = "v1.1.0 b.447"
 
 
 def submain(stdscr: _curses.window):
@@ -18,6 +18,8 @@ def submain(stdscr: _curses.window):
     curses.init_color(29, 800, 800, 0)
     curses.init_pair(28, 29, curses.COLOR_BLACK)
     tcolor_notice = curses.color_pair(28)
+    curses.init_pair(30, curses.COLOR_RED, curses.COLOR_BLACK)
+    tcolor_red = curses.color_pair(30)
 
     BOXCHAR_VERTLINE = "│"
     BOXCHAR_HORILINE = "─"
@@ -49,6 +51,8 @@ def submain(stdscr: _curses.window):
         "notc_blink": tcolor_notice | curses.A_BLINK,
         "alert": tcolor_alert,
         "alert_blink": tcolor_alert | curses.A_BLINK,
+        "red": tcolor_red,
+        "red_blink": tcolor_red | curses.A_BLINK,
     }
 
     hand = Handler(style_di)
@@ -97,6 +101,10 @@ def submain(stdscr: _curses.window):
                 for upd in tmp_args["screen_updates"]:
                     stdscr.addstr(*upd)
         except Exception as e:
+            if upd:
+                print(len(upd))
+                print(upd)
+                time.sleep(3)
             print(tmp_args)
             time.sleep(3)
             raise e

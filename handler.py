@@ -15,6 +15,7 @@ class Handler:
         pygame.mixer.music.load(
             str(pathlib.Path(__file__).parent.absolute()) + "432.wav"
         )
+        self.nobeep = False
 
     def handleme(self, inp: str, nlin, ncol):
         # this should return a dict
@@ -32,10 +33,16 @@ class Handler:
             return True
 
         if inp.startswith("pomo "):
+            if inp != "pomo update":
+                self.nobeep = False
             # pomo has custody of line 1 characters 1 to 6
             if inp == "pomo update":
                 res = self.pomo.remains()
-                if res["beep"] is True and not pygame.mixer.music.get_busy():
+                if (
+                    res["beep"] is True
+                    and not self.nobeep
+                    and not pygame.mixer.music.get_busy()
+                ):
                     pygame.mixer.music.play()
                 if res["beep"] is False and pygame.mixer.music.get_busy():
                     pygame.mixer.music.pause()
@@ -72,6 +79,9 @@ class Handler:
             elif inp == "pomo reset":
                 self.pomo = ptimer(self.pomo.limit.total_seconds())
                 return {"supd": ["Pomo Reset!", "norm"], "update_screen": False}
+            elif inp in ("pomo quiet", "pomo silence"):
+                self.pomo = ptimer(self.pomo.limit.total_seconds())
+                return {"supd": ["Pomo Reset!", "norm"], "update_screen": False}
             elif inp == "pomo help":
                 lines = [
                     "--> `pomo update` - updates the timer widget. This is done about",
@@ -80,6 +90,7 @@ class Handler:
                     "--> `pomo pause` - pauses or unpauses a pomo timer.",
                     "--> `pomo reset` - resets the pomo timer to the same time as the last",
                     "               one.",
+                    "--> `pomo [quiet | silence]` - stops pomo beeping.",
                     "--> `pomo help` - shows this text.",
                 ]
                 return {

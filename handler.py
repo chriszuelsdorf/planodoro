@@ -1,5 +1,6 @@
 import curses
 from datetime import timedelta
+import pathlib
 import pygame
 
 from objs import planodoro, ptimer
@@ -11,7 +12,9 @@ class Handler:
         self.plan = planodoro()
         self.styles = styles
         pygame.mixer.init()
-        pygame.mixer.music.load("432.wav")
+        pygame.mixer.music.load(
+            str(pathlib.Path(__file__).parent.absolute()) + "432.wav"
+        )
 
     def handleme(self, inp: str, nlin, ncol):
         # this should return a dict

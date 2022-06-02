@@ -5,7 +5,7 @@ import time
 from handler import Handler
 
 
-PROG_VERSION = "v1.1.0 b.447"
+PROG_VERSION = "v1.2.0 b.458"
 
 
 def submain(stdscr: _curses.window):
@@ -118,11 +118,15 @@ def submain(stdscr: _curses.window):
     callhand("plan show")
     stdscr.refresh()
     bufhist = []
+    lastcall = {"plan show": ""}
+    curscreen = None
     while True:
         try:
             # time.sleep(0.016) # was using this to slow loop when nodelay was True
             updtime(stdscr)
             callhand("pomo update", supd_off=True)
+            if curscreen is not None:
+                callhand(lastcall[curscreen])
             inp = stdscr.getkey()
             if debugmode:
                 supd("key: `" + inp + "`", "notc")
@@ -172,6 +176,12 @@ def submain(stdscr: _curses.window):
                     supd(f"planodoro {PROG_VERSION}", "notc")
                 else:
                     callhand()
+                # update lastcall
+                if "help" in buf:
+                    curscreen = None
+                elif "plan" in buf:
+                    curscreen = "plan show"
+                    lastcall["plan show"] = "plan show"
                 buf = ""
                 addcursor(stdscr, buf)
             elif inp == curses.KEY_BACKSPACE or ord(inp) == 127:

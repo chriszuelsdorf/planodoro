@@ -118,11 +118,15 @@ def submain(stdscr: _curses.window):
     callhand("plan show")
     stdscr.refresh()
     bufhist = []
+    lastcall = {"plan show": ""}
+    curscreen = None
     while True:
         try:
             # time.sleep(0.016) # was using this to slow loop when nodelay was True
             updtime(stdscr)
             callhand("pomo update", supd_off=True)
+            if curscreen is not None:
+                callhand(lastcall[curscreen])
             inp = stdscr.getkey()
             if debugmode:
                 supd("key: `" + inp + "`", "notc")
@@ -150,6 +154,7 @@ def submain(stdscr: _curses.window):
             stdscr.addstr(0, ncol - 12, " " + BOXCHAR_VERTLINE + " ", tcolor_reg)
         if szwarn is False and isinstance(inp, str) and len(inp) == 1:
             if inp == curses.KEY_ENTER or ord(inp) == 10:
+                curscreen = None
                 if debugmode:
                     supd("Enter key")
                 bufhist.append(inp)
@@ -172,6 +177,10 @@ def submain(stdscr: _curses.window):
                     supd(f"planodoro {PROG_VERSION}", "notc")
                 else:
                     callhand()
+                # update lastcall
+                if buf.startswith("plan") and "help" not in buf:
+                    curscreen = "plan show"
+                    lastcall["plan show"] = "plan show"
                 buf = ""
                 addcursor(stdscr, buf)
             elif inp == curses.KEY_BACKSPACE or ord(inp) == 127:

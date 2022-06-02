@@ -5,7 +5,7 @@ import time
 from handler import Handler
 
 
-PROG_VERSION = "v1.1.0 b.447"
+PROG_VERSION = "v1.2.0 b.458"
 
 
 def submain(stdscr: _curses.window):

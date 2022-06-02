@@ -80,8 +80,10 @@ class Handler:
                 self.pomo = ptimer(self.pomo.limit.total_seconds())
                 return {"supd": ["Pomo Reset!", "norm"], "update_screen": False}
             elif inp in ("pomo quiet", "pomo silence"):
-                self.pomo = ptimer(self.pomo.limit.total_seconds())
-                return {"supd": ["Pomo Reset!", "norm"], "update_screen": False}
+                self.nobeep = True
+                if pygame.mixer.music.get_busy():
+                    pygame.mixer.music.pause()
+                return {"supd": ["Pomo Silenced!", "norm"], "update_screen": False}
             elif inp == "pomo help":
                 lines = [
                     "--> `pomo update` - updates the timer widget. This is done about",

@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from datetime import datetime, timedelta
+import time
 
 
 @dataclass(order=True)
@@ -49,12 +50,14 @@ class planodoro:
         ]
         ibefore = ""
         for x in like_to_show:
-            if x < " " + ctime:
+            if x[:5] <= " " + ctime:
                 ibefore = str(x)
         iafter = ""
         for x in like_to_show[::-1]:
-            if x > " " + ctime:
+            if x[:5] > " " + ctime:
                 iafter = str(x)
+        # print([ctime, ibefore[:10], iafter[:10]])
+        # time.sleep(5)
         for i in range(len(treturn)):
             # do this bc we will be modifying the list
             if treturn[i][2] in [ibefore, iafter]:

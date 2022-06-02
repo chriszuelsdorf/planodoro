@@ -154,7 +154,6 @@ def submain(stdscr: _curses.window):
             stdscr.addstr(0, ncol - 12, " " + BOXCHAR_VERTLINE + " ", tcolor_reg)
         if szwarn is False and isinstance(inp, str) and len(inp) == 1:
             if inp == curses.KEY_ENTER or ord(inp) == 10:
-                curscreen = None
                 if debugmode:
                     supd("Enter key")
                 bufhist.append(inp)
@@ -178,7 +177,9 @@ def submain(stdscr: _curses.window):
                 else:
                     callhand()
                 # update lastcall
-                if buf.startswith("plan") and "help" not in buf:
+                if "help" in buf:
+                    curscreen = None
+                elif "plan" in buf:
                     curscreen = "plan show"
                     lastcall["plan show"] = "plan show"
                 buf = ""
